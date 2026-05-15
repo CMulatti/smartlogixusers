@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 
@@ -36,14 +37,24 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // PUBLIC endpoints - no token needed
                         .requestMatchers("/auth/**").permitAll()           //All auth endpoints
-                        .requestMatchers("/users/register").permitAll()    // Register
-                        .requestMatchers("/users/exists/**").permitAll()   //Check username
+
                         .requestMatchers("/v3/api-docs/**").permitAll()        //Swagger docs
                         .requestMatchers("/swagger-ui.html").permitAll()       //Swagger UI
                         .requestMatchers("/swagger-ui/**").permitAll()         // Swagger resources
 
-                        //ADMIN ONLY endpoints
+                        .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/users/me/password").authenticated()
+
                         .requestMatchers("/users").hasRole("ADMIN")  // GET all users
+                        .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users/exists/**").hasRole("ADMIN")
+
+
+                        // USER updates own profile/password
+                        .requestMatchers("/users/me/**").authenticated()
+
 
                         //PROTECTED endpoints, any authenticated user
                         .anyRequest().authenticated()

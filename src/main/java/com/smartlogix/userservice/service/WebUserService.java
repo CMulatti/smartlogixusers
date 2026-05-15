@@ -21,46 +21,49 @@ public class WebUserService {
         return repository.findAll();
     }
 
-    //GET USER BY ID: returns an optional bc user might not exist, so we let Controller decide what to do if not found
-    public Optional<WebUser> getUserById(Long userId) {
-        return repository.findById(userId);
-    }
-
-    //GET USER BY USERNAME
+    // Called by GET /users/me
+    // Called by GET /users/search?username=  in admin search box
+    //same method, controller decides the context (own profile vs admin looking for sm else)
     public Optional<WebUser> getUserByUsername(String username) {
         return repository.findByUsername(username);
     }
 
-    // REGISTER NEW USER
-    public WebUser registerUser(String username, String password) {
-        // Check if username already exists
+    // Called by DELETE /users/{id} — needs ID to locate the target user
+    public Optional<WebUser> getUserById(Long userId) {
+        return repository.findById(userId);
+    }
+
+    //----ADMIN (manager) creates USER (employee) account
+    //Called by POST /users
+    public WebUser createUser(String username, String password) {
         if (repository.findByUsername(username).isPresent()) {
             throw new RuntimeException("Usuario ya existe");
         }
-        //build new user object
         WebUser newUser = new WebUser();
         newUser.setUsername(username);
-        newUser.setUserPassword(password); // This in the future will need to be hashed
-        newUser.setUserRole("USER"); //Default role
-
-        return repository.save(newUser); //save new user to database
+        newUser.setUserPassword(password); // hash in future
+        newUser.setUserRole("USER");
+        newUser.setMustChangePassword(true); // employee must set own password on first login
+        return repository.save(newUser);
     }
 
-    //UPDATE PASSWORD
-    public void updatePassword(Long userId, String currentPassword, String newPassword) {
-        WebUser user = repository.findById(userId)
+    // Called by PUT /users/me/password — works for both ADMIN and USER
+    // Username comes from JWT so no ID needed, no ownership check needed
+    public void updatePassword(String username, String currentPassword, String newPassword) {
+        WebUser user = repository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        //Verify current password
         if (!user.getUserPassword().equals(currentPassword)) {
             throw new RuntimeException("Contraseña actual incorrecta");
         }
 
-        user.setUserPassword(newPassword); //to be hashed in the future
+        user.setUserPassword(newPassword); // hash in future
+        user.setMustChangePassword(false); // clears the first-login flag
         repository.save(user);
     }
 
-    // Delete user
+
+    // Called by DELETE /users/{id} — ADMIN only, SecurityConfig already enforces this
     public void deleteUser(Long userId) {
         if (!repository.existsById(userId)) {
             throw new RuntimeException("Usuario no encontrado");
@@ -68,8 +71,11 @@ public class WebUserService {
         repository.deleteById(userId);
     }
 
-    //Check if user exists
+    // for ADMIN's user registration form validation
+    // Called by GET /users/exists/{username}
     public boolean userExists(String username) {
         return repository.findByUsername(username).isPresent();
     }
+
+
 }

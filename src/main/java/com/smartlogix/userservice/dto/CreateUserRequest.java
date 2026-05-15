@@ -1,12 +1,12 @@
 package com.smartlogix.userservice.dto;
 
-public class RegisterRequest {
+public class CreateUserRequest {
     private String username;
     private String password;
 
     // Constructors
-    public RegisterRequest() {}
-    public RegisterRequest(String username, String password) {
+    public CreateUserRequest() {}
+    public CreateUserRequest(String username, String password) {
         this.username = username;
         this.password = password;
     }

@@ -66,7 +66,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             // Invalid token : continue without authentication
-            System.err.println("JWT validation error: " + e.getMessage());
+            System.err.println("Error de validación JWT: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response); //let the request go to the next filter or controller

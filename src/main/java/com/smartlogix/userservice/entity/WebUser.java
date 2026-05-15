@@ -23,8 +23,11 @@ public class WebUser {
 
     @JsonIgnore //When Spring converts our WebUser object to JSON it will skip the userPassword field, we want to ensure passwords are never returned in the JSON
     @Column(name = "user_password", length = 60, nullable = false)
-    private String userPassword;  // Changed field name to match DB column
+    private String userPassword;
 
     @Column(name = "user_role", length = 10)
-    private String userRole;  // Changed field name to match DB column
+    private String userRole;
+
+    @Column(name = "must_change_password", nullable = false)
+    private boolean mustChangePassword = false;
 }

@@ -56,6 +56,7 @@ public class JwtService {
                     .parseSignedClaims(token);
             return true;
         } catch (Exception e) {
+            System.err.println("Validación de token fallida " + e.getMessage());
             return false;
         }
     }
