@@ -36,7 +36,7 @@ public class WebUserService {
     //----ADMIN (manager) creates USER (employee) account
     //Called by POST /users
     public WebUser createUser(String username, String password) {
-        if (repository.findByUsername(username).isPresent()) {
+        if (userExists(username)) {
             throw new RuntimeException("Usuario ya existe");
         }
         WebUser newUser = new WebUser();
