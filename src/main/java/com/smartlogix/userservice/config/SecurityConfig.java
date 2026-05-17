@@ -42,18 +42,16 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui.html").permitAll()       //Swagger UI
                         .requestMatchers("/swagger-ui/**").permitAll()         // Swagger resources
 
-                        .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/users/me/password").authenticated()
+                        // USER updates own profile/password
+                        .requestMatchers("/users/me/**").authenticated()
 
-                        .requestMatchers("/users").hasRole("ADMIN")  // GET all users
+                        // ADMIN only
                         .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/users/exists/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users/search").hasRole("ADMIN")
 
-
-                        // USER updates own profile/password
-                        .requestMatchers("/users/me/**").authenticated()
 
 
                         //PROTECTED endpoints, any authenticated user

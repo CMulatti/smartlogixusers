@@ -72,8 +72,7 @@ public class WebUserController {
     //ADMIN deletes USER accounts, but NOT his own admin account
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id, Authentication authentication) {
-        return userService.getUserById(id)
-                .map(userToDelete -> {
+        return userService.getUserById(id).map(userToDelete -> {
                     if (userToDelete.getUsername().equals(authentication.getName())) {
                         return ResponseEntity.status(403).body("Los administradores no pueden eliminar su propia cuenta");
                     }

@@ -41,7 +41,7 @@ public class WebUserService {
         }
         WebUser newUser = new WebUser();
         newUser.setUsername(username);
-        newUser.setUserPassword(password); // hash in future
+        newUser.setUserPassword(password); //hash in future
         newUser.setUserRole("USER");
         newUser.setMustChangePassword(true); // employee must set own password on first login
         return repository.save(newUser);
@@ -58,7 +58,7 @@ public class WebUserService {
         }
 
         user.setUserPassword(newPassword); // hash in future
-        user.setMustChangePassword(false); // clears the first-login flag
+        user.setMustChangePassword(false); //clears the first-login flag
         repository.save(user);
     }
 
